@@ -4,6 +4,9 @@ signal hit
 
 export var life: int =3 #HZ
 export var speed = 300 # How fast the player will move (pixels/sec).#HZ
+var bullet_speed = 1000 #HZ
+var bullet = preload("res://bullet.tscn")#HZ
+
 var screen_size # Size of the game window.
 
 func _ready():
@@ -39,6 +42,10 @@ func _process(delta):
 	elif velocity.y != 0:
 		$AnimatedSprite.animation = "up"
 		$AnimatedSprite.flip_v = velocity.y > 0
+		
+	look_at(get_global_mouse_position())#HZ
+	if Input.is_action_just_pressed("Space"):
+		fire()
 
 
 func start(pos):
@@ -55,3 +62,12 @@ func _on_Player_body_entered(_body):
 func disablePlayer(): #HZ
 	$CollisionShape2D.set_deferred("disabled", true)	
 	hide() # Player disappears after being hit.
+
+func fire():#HZ(66-71)
+	var bullet_instance = bullet.instance()
+	bullet_instance.position = get_global_position()
+	bullet_instance.rotation_degrees = rotation_degrees
+	bullet_instance.apply_impulse(Vector2(),Vector2(bullet_speed,0).rotated(rotation))
+	get_tree().get_root().call_deferred("add_child", bullet_instance)
+	
+	
